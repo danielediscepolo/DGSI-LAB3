@@ -1,0 +1,80 @@
+# DGSI-LAB3: Function Calling, Tools, and LLMs
+
+## Overview
+This project demonstrates advanced function calling with LLMs, using Python tools for math solving, algebra, and plotting. It includes:
+- A Three Little Pigs demo (with and without tools)
+- A math solver with four deterministic tools
+- Robust orchestration between LLM and Python
+
+## Configuration
+Set your API credentials in `.env` using values from `week-03/api_key.md`:
+- `OPENAI_API_KEY`
+- `OPENAI_API_ENDPOINT=https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+- `MODEL=qwen3.5-122b-a10b`
+
+## Where to Find Solutions and Program
+- **Practice solutions and evidence:** See `week-03/report.md` for detailed answers, explanations, and test results.
+- **Main program:** All code is in `week-03/function-calling/function-calling/`. Key scripts:
+  - `three_pigs_function_calling.py` (demo)
+  - `math_solver_function_calling.py` (math solver)
+
+## How to Execute
+Navigate to `week-03/function-calling/function-calling` and run:
+
+```bash
+python three_pigs_function_calling.py
+python math_solver_function_calling.py
+python math_solver_function_calling.py --problem "Solve 2x + 5 = 17"
+python math_solver_function_calling.py --problem "Plot y = x^2 - 4x + 3 from x = -2 to x = 6"
+```
+
+## Tools Implemented
+1. `evaluate_expression(expression: str)` — Arithmetic/simplification (SymPy)
+2. `solve_equation(equation: str, variable: str = "x")` — Algebraic solving (SymPy)
+3. `factor_expression(expression: str)` — Polynomial factoring (SymPy)
+4. `plot_function(expression: str, x_min: float, x_max: float, output_file: str | None = None)` — PNG plot (Matplotlib)
+
+## How Function Calling Works
+- The LLM receives tool schemas and user prompts
+- If a tool call is needed, the host executes the Python function and returns the result
+- The LLM uses tool results to generate the final answer
+- All computation and plotting is deterministic (no hallucination)
+
+## Testing & Evidence
+### Algebra
+- Linear: `Solve 2x + 5 = 17` → x = 6
+- Quadratic: `x^2 - 5x + 6 = 0` → x = 2, 3
+- Factor: `x^2 + 7x + 12` → (x + 3)(x + 4)
+
+### Arithmetic
+- Fractions: `(3/4 + 2/3) * 6` → 8.5
+- Powers: `2^5 + 3^2` → 41
+
+### Plotting
+- Parabola: `x^2 - 4x + 3` from x=-2 to x=6
+- Line: `2x + 1` from x=-3 to x=3
+- Vertex: `x^2 - 6x + 5` (vertex at (3, -4))
+
+### Robustness
+- Handles invalid syntax and ambiguous questions gracefully
+- Declines unsupported requests (e.g., calculus)
+
+## Multipass Notes
+- Multipass is optional but useful for avoiding Windows Unicode/terminal issues
+- Plots/logs use `/tmp` fallback if workspace permissions fail
+
+## PDF Report
+To generate a PDF from the markdown report:
+
+```bash
+cd week-03
+pandoc report.md -o report.pdf --pdf-engine=xelatex
+```
+
+## Reflection
+- Function calling is more reliable than plain text math: tools guarantee correctness
+- Small, well-defined tool set improves reliability
+- SymPy and Matplotlib provide deterministic computation and plotting
+- The LLM orchestrates, tools execute
+
+See `report.md` for full evidence and detailed analysis.
